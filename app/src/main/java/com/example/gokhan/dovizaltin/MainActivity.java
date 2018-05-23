@@ -37,11 +37,12 @@ public class MainActivity extends AppCompatActivity
 
     final List<Kisi> kisiler = new ArrayList<Kisi>();
     final List<Currency> currencies = new ArrayList<Currency>();
-    Button myButton;
     Context myContext;
     Activity myActivity;
+    ListView listtemiz;
+    OzelAdapter adaptor;
 
-    private void veriGetir(String url){
+    private void veriGetir(String url) {
 
         RequestQueue requestQueue = Volley.newRequestQueue(myContext);
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest
@@ -50,15 +51,15 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onResponse(JSONArray response) {
                         try {
-                            for (int i=0;i<response.length();i++){
+                            for (int i = 0; i < response.length(); i++) {
                                 JSONObject temp = response.getJSONObject(i);
-                                currencies.add(new Currency(temp.getString("code"),temp.getString("selling").substring(0,3),temp.getString("buying").substring(0,3),temp.getString("change_rate").substring(0,3)));
+                                currencies.add(new Currency(temp.getString("code"), temp.getString("selling").substring(0, 3), temp.getString("buying").substring(0, 3), temp.getString("change_rate").substring(0, 3)));
+                                listtemiz.setAdapter(adaptor);
                             }
-                        }catch (JSONException e){
+
+                        } catch (JSONException e) {
 
                         }
-
-
                     }
                 }, new Response.ErrorListener() {
 
@@ -69,7 +70,6 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
 
-
         requestQueue.add(jsonArrayRequest);
     }
 
@@ -79,20 +79,11 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         myContext = getApplicationContext();
         myActivity = this;
+        listtemiz = (ListView) findViewById(R.id.liste);
+        adaptor = new OzelAdapter(myActivity, currencies);
+        veriGetir("https://www.doviz.com/api/v1/currencies/all/latest");
 
 
-        myButton = (Button)findViewById(R.id.myButton);
-
-        final ListView listtemiz = (ListView)findViewById(R.id.liste);
-
-        myButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                veriGetir("https://www.doviz.com/api/v1/currencies/all/latest");
-                OzelAdapter adaptor = new OzelAdapter(myActivity,currencies);
-                listtemiz.setAdapter(adaptor);
-            }
-        });
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
